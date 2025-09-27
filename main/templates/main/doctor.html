@@ -1,0 +1,69 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Doctor Profile{% endblock %}
+
+{% block content %}
+<section class="doctor-profile container">
+    <h2 class="section-title">{{ doctor.name }}</h2>
+
+    <div class="profile-container">
+        <!-- Doctor Info -->
+        <div class="profile-details">
+            <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}" class="profile-img">
+            <h3>{{ doctor.name }}</h3>
+            <p><strong>Specialty:</strong> {{ doctor.specialty|default:"Not specified" }}</p>
+            <p><strong>Languages:</strong>
+                {% if doctor.language_list %}
+                    {{ doctor.language_list|join:", " }}
+                {% else %}
+                    Not specified
+                {% endif %}
+            </p>
+            <p><strong>Location:</strong> {{ doctor.location|default:"Not available" }}</p>
+            <p><strong>Consultation Fee:</strong> ৳{{ doctor.fee|default:"N/A" }}</p>
+            <p class="bio">{{ doctor.bio|default:"No biography available." }}</p>
+        </div>
+
+        <!-- Schedule -->
+        <div class="schedule">
+            <h4>Available Times</h4>
+            {% if schedules %}
+                <ul>
+                    {% for s in schedules %}
+                        <li>{{ s.day }}: {{ s.start_time|time:"h:i A" }} – {{ s.end_time|time:"h:i A" }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No schedule available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Appointment Booking (for non-doctor users) -->
+    {% if not is_doctor %}
+    <div class="book-widget">
+        <h4>Book an Appointment</h4>
+        <form method="POST" action="{% url 'book_appointment' doctor.id %}" class="appointment-form">
+            {% csrf_token %}
+            <label for="visitType">Visit Type</label>
+            <select id="visitType" name="visitType" required>
+                <option value="" disabled selected>Select type</option>
+                <option value="in-person">In-person</option>
+                <option value="online">Online</option>
+            </select>
+
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required min="{{ today|date:'Y-m-d' }}">
+
+            <label for="time">Time</label>
+            <input type="time" id="time" name="time" required>
+
+            <label for="notes">Notes (optional)</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Any additional details..."></textarea>
+
+            <button type="submit" class="btn primary-btn">Confirm Appointment</button>
+        </form>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

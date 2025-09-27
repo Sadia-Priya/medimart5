@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+{% block title %}Upload Prescription{% endblock %}
+{% block content %}
+<section class="container" style="max-width:600px; margin:auto; padding:2rem;">
+  <h2 style="text-align:center; margin-bottom:1.5rem;">Upload Prescription</h2>
+
+  {% if prescription_required %}
+    <p style="color:#b00; text-align:center; margin-bottom:1rem;">
+      A doctor‑approved prescription is required for prescription items in your cart.
+    </p>
+  {% else %}
+    <p style="color:green; text-align:center; margin-bottom:1rem;">
+      No prescription required for your current cart.
+    </p>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:1rem;">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <label for="{{ form.image.id_for_label }}">Select Prescription File</label>
+    {{ form.image }}
+    {% if form.image.errors %}<p style="color:red;">{{ form.image.errors }}</p>{% endif %}
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+
+  <div style="text-align:center; margin-top:1rem;">
+    <a href="{% url 'cart' %}" class="btn btn-secondary">Back to Cart</a>
+  </div>
+</section>
+{% endblock %}

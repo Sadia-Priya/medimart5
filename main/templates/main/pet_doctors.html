@@ -1,0 +1,38 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Pet Doctors - MediMart{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <!-- Page Header -->
+  <div class="text-center mb-5">
+    <h1>Our Veterinarians</h1>
+    <p>Connect with licensed vets for online consultations or in-clinic visits.</p>
+  </div>
+
+  <!-- Doctors Grid -->
+  <div class="row justify-content-center g-4">
+    {% for doctor in doctors %}
+      {% if doctor.doctor_type == 'vet' %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm">
+            {% if doctor.image %}
+              <img src="{{ doctor.image.url }}" class="card-img-top" alt="{{ doctor.name }}" style="height:180px; object-fit:cover;">
+            {% else %}
+              <img src="{% static 'main/images/doctor.png' %}" class="card-img-top" alt="{{ doctor.name }}" style="height:180px; object-fit:cover;">
+            {% endif %}
+            <div class="card-body text-center">
+              <h5 class="card-title"> {{ doctor.name }}</h5>
+              <p class="card-text">{{ doctor.specialty|default:"Not specified" }}</p>
+                <a href="{% url 'book_vet_appointment' doctor.id %}" class="btn btn-success">Book Appointment</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <p class="text-center text-muted">No veterinarians available at the moment. Please check back later.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

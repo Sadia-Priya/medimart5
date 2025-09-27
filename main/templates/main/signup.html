@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Sign Up – PharmaStore{% endblock %}
+
+{% block content %}
+<section class="auth-section" style="max-width:500px; margin:2rem auto; padding:2rem; border:1px solid #ddd; border-radius:8px; background:#f9f9f9;">
+    <h2 style="text-align:center; margin-bottom:1.5rem;">Create an Account</h2>
+
+    <form method="post" style="display:flex; flex-direction:column; gap:1rem;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div>
+            {{ form.username.label_tag }}<br>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+
+        <div>
+            {{ form.email.label_tag }}<br>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+
+        <div>
+            {{ form.password1.label_tag }}<br>
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+        </div>
+
+        <div>
+            {{ form.password2.label_tag }}<br>
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+        </div>
+
+        <!-- Role Selection -->
+        <div style="margin-top:0.5rem;">
+            <label style="font-weight:500;">Select Role:</label><br>
+            <input type="radio" name="role" value="patient" id="role_patient" checked>
+            <label for="role_patient">Patient</label>
+            &nbsp;&nbsp;
+            <input type="radio" name="role" value="doctor" id="role_doctor">
+            <label for="role_doctor">Doctor</label>
+        </div>
+
+        <button type="submit" class="btn primary-btn" style="margin-top:1rem; padding:0.5rem; font-size:1rem;">Sign Up</button>
+    </form>
+
+    <p style="text-align:center; margin-top:1rem;">
+        Already have an account? <a href="{% url 'login' %}">Login here</a>.
+    </p>
+</section>
+{% endblock %}

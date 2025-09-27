@@ -1,0 +1,19 @@
+{% extends "main/base.html" %}
+{% block content %}
+<div class="container" style="max-width:900px; margin:2rem auto;">
+    <h2>My Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+            <div class="card" style="border:1px solid #ddd; padding:1rem; margin-bottom:1rem; border-radius:8px;">
+                <p><strong>Order ID:</strong> {{ order.id }}</p>
+                <p><strong>Date:</strong> {{ order.created_at|date:"d M Y, H:i" }}</p>
+                <p><strong>Status:</strong> {{ order.status|title }}</p>
+                <p><strong>Total:</strong> {{ order.total_price }} Tk</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+</div>
+{% endblock %}

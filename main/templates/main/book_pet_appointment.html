@@ -1,0 +1,35 @@
+{% extends "main/base.html" %}
+{% block title %}Book Appointment - {{ doctor.name }}{% endblock %}
+
+{% block content %}
+<section class="container" style="padding:2rem; max-width:700px; margin:auto;">
+  <h2 style="text-align:center;">Book Appointment with {{ doctor.name }}</h2>
+  <form method="post" style="margin-top:1.2rem;">
+    {% csrf_token %}
+    <div style="margin-bottom:10px;">
+      <label>Pet Name (optional)</label>
+      <input type="text" name="pet_name" class="form-control" placeholder="e.g. Bella">
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:10px;">
+      <div style="flex:1;">
+        <label>Date</label>
+        <input type="date" name="date" class="form-control" required>
+      </div>
+      <div style="flex:1;">
+        <label>Time</label>
+        <input type="time" name="time" class="form-control" required>
+      </div>
+    </div>
+
+    <div style="margin-bottom:10px;">
+      <label>Notes about your pet (symptoms, history)</label>
+      <textarea name="notes" class="form-control" rows="4" placeholder="Describe what's wrong..."></textarea>
+    </div>
+
+    <div style="text-align:center;">
+      <button type="submit" class="btn" style="background:#0d6efd; color:#fff; padding:10px 20px; border-radius:6px;">Confirm Booking</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

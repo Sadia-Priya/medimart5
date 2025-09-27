@@ -1,0 +1,25 @@
+{% extends "main/base.html" %}
+{% block title %}My Prescriptions{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:800px; margin:2rem auto;">
+    <h2 style="margin-bottom:1.5rem;">My Prescriptions</h2>
+
+    {% for p in prescriptions %}
+        <div class="card" style="border:1px solid #ddd; padding:1rem; margin-bottom:1rem; border-radius:8px; display:flex; align-items:center; gap:1rem;">
+            <img src="{{ p.image.url }}" alt="Prescription" style="width:150px; height:auto; object-fit:cover; border-radius:6px;">
+            <div>
+                <p><strong>Status:</strong> {{ p.status|capfirst }}</p>
+                {% if p.status != 'pending' and p.doctor %}
+                    <p><strong>Reviewed by:</strong> {{ p.doctor.user.username }}</p>
+                    <p><strong>Notes:</strong> {{ p.doctor_notes|default:"None" }}</p>
+                {% else %}
+                    <p><em>Not yet reviewed by a doctor.</em></p>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p style="text-align:center; color:#777;">No prescriptions uploaded yet.</p>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Veterinarian Profile{% endblock %}
+
+{% block content %}
+<section class="doctor-profile container py-5">
+    <h2 class="mb-4"> {{ doctor.name }}</h2>
+
+    <!-- Doctor Image -->
+    <div class="text-center mb-3">
+        {% if doctor.image %}
+            <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}" class="rounded" style="width:200px; height:250px; object-fit:cover;">
+        {% else %}
+            <img src="{% static 'main/images/doctor_profile.png' %}" alt="{{ doctor.name }}" class="rounded" style="width:200px; height:250px; object-fit:cover;">
+        {% endif %}
+    </div>
+
+    <!-- Doctor Info -->
+    <div class="mb-4">
+        <p><strong>Specialty:</strong> {{ doctor.specialty|default:"Not specified" }}</p>
+        <p><strong>Languages:</strong>
+            {% if doctor.language_list %}
+                {{ doctor.language_list|join:", " }}
+            {% else %}
+                Not specified
+            {% endif %}
+        </p>
+        <p><strong>Location:</strong> {{ doctor.location|default:"Not available" }}</p>
+        <p><strong>Consultation Fee:</strong> ৳{{ doctor.fee|default:"N/A" }}</p>
+        <p><strong>Bio:</strong> {{ doctor.bio|default:"No biography available." }}</p>
+    </div>
+
+    <!-- Schedule -->
+    <div class="mb-4">
+        <h4>Available Schedules</h4>
+        {% if schedules %}
+            <ul>
+                {% for s in schedules %}
+                    <li>{{ s.day }}: {{ s.start_time|time:"h:i A" }} – {{ s.end_time|time:"h:i A" }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No schedule available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Appointment Booking (for non-doctor users) -->
+    {% if not is_doctor %}
+    <div class="book-widget mb-5" style="max-width:400px;">
+        <h4>Book an Appointment</h4>
+        <form method="POST" action="{% url 'book_vet_appointment' doctor.id %}" class="appointment-form d-flex flex-column gap-2">
+            {% csrf_token %}
+
+            <label for="name">Your Pet Name</label>
+            <input type="text" id="name" name="name" required class="form-control">
+
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" name="phone" required class="form-control">
+
+            <label for="visitType">Visit Type</label>
+            <select id="visitType" name="visitType" required class="form-control">
+                <option value="" disabled selected>Select type</option>
+                <option value="online">Online</option>
+            </select>
+
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required min="{{ today|date:'Y-m-d' }}" class="form-control">
+
+            <label for="time">Time</label>
+            <input type="time" id="time" name="time" required class="form-control">
+
+            <label for="notes">Notes (optional)</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Any additional details..." class="form-control"></textarea>
+
+            <button type="submit" class="btn btn-success mt-2">Confirm Appointment</button>
+        </form>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

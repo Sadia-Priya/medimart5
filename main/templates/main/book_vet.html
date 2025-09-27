@@ -1,0 +1,31 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}Book Appointment - MediMart{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+  <div class="text-center mb-4">
+    <h1>Book Appointment with Dr. {{ doctor.name }}</h1>
+    <p>Specialty: {{ doctor.specialty }}</p>
+  </div>
+
+  <!-- Booking form -->
+  <form method="post" style="max-width:500px; margin:auto;">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label">Your Name</label>
+      <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Your Email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="mb-3">
+      <label for="date" class="form-label">Preferred Date</label>
+      <input type="date" class="form-control" id="date" name="date" required>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Book Appointment</button>
+  </form>
+</section>
+{% endblock %}

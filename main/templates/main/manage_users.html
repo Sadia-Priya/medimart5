@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Manage Users</h2>
+    <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Groups</th>
+            <th>Is Staff</th>
+        </tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+                {% for g in u.groups.all %}
+                    {{ g.name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    No Group
+                {% endfor %}
+            </td>
+            <td>{{ u.is_staff }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

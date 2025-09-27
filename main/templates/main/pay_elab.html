@@ -1,0 +1,38 @@
+{% extends "main/base.html" %}
+{% block title %}Pay for eLab Test{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:600px; margin:2rem auto; padding:2rem; border:1px solid #ddd; border-radius:8px;">
+
+  <h2 style="margin-bottom:1rem;">Pay for Test: {{ test.test_name }}</h2>
+  <p><strong>Test Type:</strong> {{ test.test_type }}</p>
+  <p><strong>Date:</strong> {{ test.preferred_date }} | <strong>Time:</strong> {{ test.preferred_time }}</p>
+  <p><strong>Amount to Pay:</strong> <span style="color:#d9534f; font-weight:bold;">৳{{ test.test_price }}</span></p>
+
+  {% if test.is_paid %}
+      <p style="color:green; font-weight:bold; margin-top:1rem;">✅ Payment Completed</p>
+      <p><strong>Payment Method:</strong> {{ test.payment_method }}</p>
+      <p><strong>Transaction ID:</strong> {{ test.transaction_id }}</p>
+  {% else %}
+      <p><strong>Bkash / Nagad Number:</strong> 01711001989</p>
+      <p>Please send the payment and enter your Transaction ID below:</p>
+
+      <form method="post" style="margin-top:1rem;">
+        {% csrf_token %}
+        <label for="payment_method">Payment Method:</label><br>
+        <select name="payment_method" id="payment_method" required style="width:100%; padding:8px; margin:8px 0;">
+          <option value="">-- Select --</option>
+          <option value="bkash">bKash</option>
+          <option value="nagad">Nagad</option>
+        </select><br>
+
+        <label for="transaction_id">Transaction ID:</label><br>
+        <input type="text" name="transaction_id" id="transaction_id" required style="width:100%; padding:8px; margin:8px 0;"><br>
+
+        <button type="submit" style="width:100%; padding:10px; background:#28a745; color:white; border:none; border-radius:5px; font-size:16px;">
+          Confirm Payment ৳{{ test.test_price }}
+        </button>
+      </form>
+  {% endif %}
+</section>
+{% endblock %}

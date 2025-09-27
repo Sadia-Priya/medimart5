@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Search – PharmaStore{% endblock %}
+
+{% block content %}
+    <section class="products">
+        <h2>Search Results{% if query %} for "{{ query }}"{% endif %}</h2>
+        {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% endif %}
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.description|truncatewords:20 }}</p>
+                        <p class="price">৳{{ product.price }}</p>
+                        <form action="{% url 'add_to_cart' product.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn primary-btn add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No products were found matching your query.</p>
+        {% endif %}
+    </section>
+{% endblock %}

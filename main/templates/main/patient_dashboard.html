@@ -1,0 +1,205 @@
+{% extends "main/base.html" %}
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:900px; margin:2rem auto; font-family: Arial, sans-serif;">
+
+    <h2 style="margin-bottom:1rem;">Welcome to Patient Dashboard</h2>
+
+    <!-- Orders Table -->
+    <h3 style="margin-top:1.5rem; margin-bottom:0.5rem;">My Orders</h3>
+    {% if orders %}
+        <table style="width:100%; border-collapse: collapse; margin-bottom:2rem; font-size:0.85rem;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid #ddd; padding:6px;">Order ID</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Date</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Total</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Payment Method</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:6px;">#{{ order.id }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">৳{{ order.total_price }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ order.payment_method }}</td>
+                        <td style="border:1px solid #ddd; padding:6px; text-transform: capitalize;">{{ order.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No orders placed yet.</p>
+    {% endif %}
+
+    <!-- Prescriptions Table -->
+    <h3 style="margin-top:1.5rem; margin-bottom:0.5rem;">My Prescriptions</h3>
+    {% if prescriptions %}
+        <table style="width:100%; border-collapse: collapse; font-size:0.85rem; margin-bottom:2rem;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid #ddd; padding:6px;">ID</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Date Uploaded</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Status</th>
+                    <th style="border:1px solid #ddd; padding:6px;">File</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Reviewed By</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in prescriptions %}
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:6px;">#{{ p.id }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ p.uploaded_at|date:"Y-m-d H:i" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px; text-transform: capitalize;">{{ p.status }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if p.image %}
+                                <a href="{{ p.image.url }}" target="_blank">View</a>
+                            {% else %}
+                                Not uploaded
+                            {% endif %}
+                        </td>
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if p.status != 'pending' and p.doctor %}
+                                {{ p.doctor.user.username }}
+                            {% else %}
+                                Not reviewed
+                            {% endif %}
+                        </td>
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if p.status != 'pending' and p.doctor_notes %}
+                                {{ p.doctor_notes }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No prescriptions uploaded yet.</p>
+    {% endif %}
+
+    <!-- Appointments Table -->
+    <h3 style="margin-top:1.5rem; margin-bottom:0.5rem;">My Appointments</h3>
+    {% if appointments %}
+        <table style="width:100%; border-collapse: collapse; font-size:0.85rem; margin-bottom:2rem;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid #ddd; padding:6px;">Doctor</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Date</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Time</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Visit Type</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Status</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Prescription</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Payment</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ appointment.doctor.name }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ appointment.date|date:"Y-m-d" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ appointment.time|time:"H:i" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ appointment.visit_type|capfirst }}</td>
+                        <td style="border:1px solid #ddd; padding:6px; text-transform: capitalize;">{{ appointment.status }}</td>
+
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if appointment.prescription_file %}
+                                <a href="{{ appointment.prescription_file.url }}" download>Download</a>
+                            {% else %}
+                                Not uploaded
+                            {% endif %}
+                        </td>
+
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if appointment.is_paid %}
+                                Paid via {{ appointment.payment_method }}<br>
+                                Transaction ID: {{ appointment.transaction_id }}
+                            {% else %}
+                                <p>Pay ৳{{ appointment.doctor.fee }} via <strong>{{ appointment.doctor.bkash_number }}</strong></p>
+                                <a href="{% url 'pay_appointment' appointment.id %}" style="color:blue;">Pay Now</a>
+                            {% endif %}
+                        </td>
+
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if appointment.visit_type == "online" and appointment.meeting_link %}
+                                <a href="{{ appointment.meeting_link }}" target="_blank">Join Online</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No appointments scheduled.</p>
+    {% endif %}
+
+    <!-- eLab Tests Table -->
+    <h3 style="margin-top:1.5rem; margin-bottom:0.5rem;">My eLab Tests</h3>
+    {% if elab_schedules %}
+        <table style="width:100%; border-collapse: collapse; font-size:0.85rem; margin-bottom:2rem;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid #ddd; padding:6px;">Test Type</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Test Name</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Price</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Scheduled Date</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Scheduled Time</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Address</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Payment</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in elab_schedules %}
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.test_type }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.test_name }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">৳{{ test.test_price }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.preferred_date|date:"Y-m-d" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.preferred_time|time:"H:i" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.address }}</td>
+
+                        <!-- Payment column -->
+                    <!-- Payment column -->
+<td style="border:1px solid #ddd; padding:6px;">
+    {% if test.is_paid %}
+        Paid via {{ test.payment_method }}<br>
+        Transaction ID: {{ test.transaction_id }}
+    {% else %}
+        <p>Pay ৳{{ test.test_price }} via <strong>{{ test.bkash_number }}</strong></p>
+        <a href="{% url 'pay_elab' test.id %}" style="color:blue;">Pay Now</a>
+    {% endif %}
+</td>
+
+
+
+
+                        <!-- Report column -->
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if test.report_file and test.report_verified %}
+                                <a href="{{ test.report_file.url }}" download>Download</a>
+                            {% elif test.report_file and not test.report_verified %}
+                                Pending verification
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No eLab tests scheduled yet.</p>
+    {% endif %}
+
+</section>
+{% endblock %}

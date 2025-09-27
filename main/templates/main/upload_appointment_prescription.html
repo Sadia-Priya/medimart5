@@ -1,0 +1,15 @@
+{% extends "main/base.html" %}
+
+{% block title %}Upload Prescription{% endblock %}
+
+{% block content %}
+<section style="max-width:500px; margin:2rem auto; padding:1.5rem; background:#fff; border-radius:8px; border:1px solid #ddd;">
+    <h1>Upload Prescription for {{ appointment.patient.username }}</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</section>
+{% endblock %}

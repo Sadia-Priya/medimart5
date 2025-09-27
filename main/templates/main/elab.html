@@ -1,0 +1,182 @@
+{% extends 'main/base.html' %}
+
+{% block title %}eLab – PharmaStore{% endblock %}
+
+{% block content %}
+<section class="elab" style="max-width: 900px; margin: auto; padding: 2rem;">
+    <h2>Schedule Your Test</h2>
+    <p>Select a test type below and click on a test card. A medical assistant will collect the sample from your address. Results are available online within 24 hours.</p>
+
+    <form method="post" class="elab-form" enctype="multipart/form-data" style="border:1px solid #ddd; padding:1.5rem; border-radius:8px; margin-bottom:2rem;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- Preferred Date -->
+        <div class="form-group">
+            {{ form.preferred_date.label_tag }}
+            {{ form.preferred_date }}
+            {{ form.preferred_date.errors }}
+        </div>
+
+        <!-- Preferred Time -->
+        <div class="form-group">
+            {{ form.preferred_time.label_tag }}
+            {{ form.preferred_time }}
+            {{ form.preferred_time.errors }}
+        </div>
+
+        <!-- Address -->
+        <div class="form-group">
+            {{ form.address.label_tag }}
+            {{ form.address }}
+            {{ form.address.errors }}
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+            {{ form.phone.errors }}
+        </div>
+
+        <!-- Payment Method -->
+        <div class="form-group">
+            {{ form.payment_method.label_tag }}
+            {{ form.payment_method }}
+            {{ form.payment_method.errors }}
+        </div>
+
+        <!-- Transaction ID -->
+        <div class="form-group" id="txnDiv" style="display:none;">
+            {{ form.transaction_id.label_tag }}
+            {{ form.transaction_id }}
+            {{ form.transaction_id.errors }}
+        </div>
+
+        <!-- Hidden fields for selected test -->
+        <input type="hidden" id="id_test_type" name="test_type">
+        <input type="hidden" id="id_test_name" name="test_name">
+        <input type="hidden" id="id_test_price" name="test_price">
+
+        <button type="submit" class="btn primary-btn" style="margin-top:1rem;">Schedule Test</button>
+    </form>
+
+    <hr style="margin: 2rem 0;">
+
+    <!-- Test Cards -->
+    {% for type_label, type_value in form.fields.test_type.choices %}
+        <h3>{{ type_label }}</h3>
+        <div class="test-cards" style="display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
+            {% for test, value in AVAILABLE_TESTS.items %}
+                {% with t_type=value.0 price=value.1 %}
+                    {% if t_type == type_value %}
+                        <div class="test-card"
+                             data-type="{{ t_type }}"
+                             data-name="{{ test }}"
+                             data-price="{{ price }}"
+                             style="border:1px solid #ccc; padding:1rem; cursor:pointer; flex:1 1 200px; text-align:center; border-radius:8px; transition:0.2s;">
+                            <strong>{{ test }}</strong><br>
+                            ৳{{ price }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <!-- Scheduled Tests -->
+    <h3 style="margin-top:2rem;">My Scheduled Tests</h3>
+    {% if elab_schedules %}
+        <table style="width:100%; border-collapse: collapse; font-size:0.9rem;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid #ddd; padding:6px;">Test Type</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Test Name</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Price</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Scheduled Date</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Scheduled Time</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Address</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Payment</th>
+                    <th style="border:1px solid #ddd; padding:6px;">Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in elab_schedules %}
+                    <tr>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.test_type }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.test_name }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">৳{{ test.test_price }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.preferred_date|date:"Y-m-d" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.preferred_time|time:"H:i" }}</td>
+                        <td style="border:1px solid #ddd; padding:6px;">{{ test.address }}</td>
+
+                        <!-- Payment column -->
+                        <td style="border:1px solid #ddd; padding:6px; text-align:center;">
+    {% if test.is_paid %}
+        Paid via {{ test.payment_method }}<br>
+        Transaction ID: {{ test.transaction_id }}
+    {% else %}
+        <span style="color:#d9534f;">Pending Payment</span><br>
+        <a href="{% url 'pay_elab' test.id %}" class="btn btn-sm btn-primary" style="margin-top:5px;">Pay Now</a>
+    {% endif %}
+</td>
+
+
+                        <!-- Report column -->
+                        <td style="border:1px solid #ddd; padding:6px;">
+                            {% if test.report_file and test.report_verified %}
+                                <a href="{{ test.report_file.url }}" download>Download</a>
+                            {% elif test.report_file and not test.report_verified %}
+                                Pending verification
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No tests scheduled yet.</p>
+    {% endif %}
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeInput = document.getElementById('id_test_type');
+    const nameInput = document.getElementById('id_test_name');
+    const priceInput = document.getElementById('id_test_price');
+    const cards = document.querySelectorAll('.test-card');
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            // Highlight selected card
+            cards.forEach(c => c.style.backgroundColor = '#fff');
+            card.style.backgroundColor = '#d1e7fd';
+
+            // Set hidden form values
+            typeInput.value = card.dataset.type;
+            nameInput.value = card.dataset.name;
+            priceInput.value = card.dataset.price;
+        });
+    });
+
+    // Auto-select first card on page load
+    const firstCard = document.querySelector('.test-card');
+    if(firstCard){ firstCard.click(); }
+
+    // Payment method toggle
+    const paymentSelect = document.getElementById('id_payment_method');
+    const txnDiv = document.getElementById('txnDiv');
+    if(paymentSelect){
+        paymentSelect.addEventListener('change', function(){
+            if(this.value === 'bkash' || this.value === 'nagad'){
+                txnDiv.style.display = 'block';
+            } else {
+                txnDiv.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

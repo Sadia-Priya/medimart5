@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MediMart{% endblock %}</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<header>
+    <nav class="nav-bar">
+        <div class="container nav-container">
+            <!-- Logo -->
+            <div class="logo">
+                <a href="{% url 'index' %}">Medi<span>Mart</span></a>
+            </div>
+
+            <!-- Navbar Links -->
+            <ul class="nav-links">
+                <li><a href="{% url 'index' %}">Home</a></li>
+
+                {% if user.is_authenticated %}
+                    {% if is_patient %}
+                        <li><a href="#categories">Categories</a></li>
+                        <li><a href="{% url 'doctors_list' %}">Doctors</a></li>
+                        <li><a href="{% url 'patient_dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'my_prescriptions' %}">My Prescriptions</a></li>
+                        <li><a href="{% url 'pet_care' %}" class="{% if request.path|slice:"0:9" == '/pet-care' %}active{% endif %}">Pet Care</a></li>
+<li><a href="{% url 'elab_schedule' %}">eLab</a></li>
+
+                    {% endif %}
+
+                    {% if is_doctor %}
+                        <li><a href="{% url 'doctor_dashboard' %}">Doctor Dashboard</a></li>
+                        <li><a href="{% url 'doctor_appointments' %}">Appointments</a></li>
+                        <li><a href="{% url 'requested_prescriptions' %}">Requested Prescriptions</a></li>
+                        <li><a href="{% url 'doctor_elab_list' %}">Manage eLab Reports</a></li>
+
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+            <!-- Actions: Search, Cart, Login/Logout -->
+            <div class="nav-actions">
+                <form class="search-form" action="{% url 'search' %}" method="get">
+                    <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search…" aria-label="Search">
+                    <button type="submit"><i class="fa fa-search"></i></button>
+                </form>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cart' %}" class="btn secondary-btn">
+                        <i class="fa fa-shopping-cart"></i> Cart ({{ cart_count|default:0 }})
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn primary-btn">Logout</a>
+                {% else %}
+                    <a href="{% url 'signup' %}" class="btn secondary-btn">Sign Up</a>
+                    <a href="{% url 'login' %}" class="btn primary-btn">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- Flash messages -->
+{% if messages %}
+<div id="messages" style="position:fixed; top:20px; right:20px; z-index:9999;">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}"
+             style="margin-bottom:0.5rem; padding:0.75rem 1rem; border-radius:6px;
+                    background-color:
+                      {% if message.tags == 'success' %}#28a745
+                      {% elif message.tags == 'error' %}#dc3545
+                      {% elif message.tags == 'warning' %}#ffc107
+                      {% else %}#17a2b8{% endif %};
+                    color:white;">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Main Content -->
+{% block content %}{% endblock %}
+
+<!-- Footer -->
+<footer>
+    <div class="footer-container container">
+        <div class="footer-about">
+            <h3>About MediMart</h3>
+            <p>We provide quality pharmaceuticals and healthcare services to your doorstep.</p>
+        </div>
+        <div class="footer-contact">
+            <h4>Contact Us</h4>
+            <p><i class="fa fa-phone"></i> 01306769903</p>
+            <p><i class="fa fa-envelope"></i> info@medimart.com</p>
+            <p><i class="fa fa-map-marker"></i> 150 West Kafrul, Dhaka</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 <a href="{% url 'index' %}">Medi<span>Mart</span></a>. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="{% static 'main/js/scripts.js' %}"></script>
+
+<!-- Auto-dismiss messages -->
+<script>
+  setTimeout(function() {
+    let messages = document.getElementById("messages");
+    if (messages) {
+      messages.style.transition = "opacity 0.5s ease";
+      messages.style.opacity = "0";
+      setTimeout(() => { messages.remove(); }, 500);
+    }
+  }, 4000);
+</script>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

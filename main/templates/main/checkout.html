@@ -1,0 +1,58 @@
+{% extends 'main/base.html' %}
+{% block title %}Checkout – MediMart{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 2rem; max-width: 600px; margin: auto;">
+  <h2 style="text-align:center; margin-bottom: 1.5rem;">Checkout</h2>
+
+  {% if cart_items %}
+    <ul style="list-style:none; padding:0; margin-bottom:1rem;">
+      {% for item in cart_items %}
+        <li style="padding:0.5rem 0; border-bottom:1px solid #ddd;">
+          {{ item.product.name }} (x{{ item.quantity }}) – ৳{{ item.subtotal|floatformat:2 }}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <p style="text-align:right; font-weight:bold; font-size:1.2rem; margin-bottom:1.5rem;">
+  Total: ৳{{ total|floatformat:2 }}
+    </p>
+
+
+    {% if prescription_required and not has_approved_prescription %}
+      <p style="color:red; text-align:center;">
+        You must upload an approved prescription to complete this checkout.
+      </p>
+      <div style="text-align:center; margin-bottom:1rem;">
+        <a href="{% url 'upload_prescription' %}" class="btn btn-warning">Upload Prescription</a>
+      </div>
+      <button class="btn btn-success" style="width:100%;" disabled>
+        Complete Purchase
+      </button>
+    {% else %}
+      <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom:1rem;">
+          <label for="payment_method" style="display:block; font-weight:500;">Payment Method</label>
+          <select name="payment_method" id="payment_method" required
+                  style="width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:4px;">
+            {% for method in payment_methods %}
+              <option value="{{ method }}"
+                {% if selected_method and selected_method == method %}selected{% endif %}>
+                {{ method }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success" style="width:100%;">Complete Purchase</button>
+      </form>
+    {% endif %}
+
+  {% else %}
+    <p style="text-align:center; color:red;">Your cart is empty.</p>
+    <p style="text-align:center;">
+      <a href="{% url 'index' %}" class="btn btn-primary">Continue Shopping</a>
+    </p>
+  {% endif %}
+</section>
+{% endblock %}

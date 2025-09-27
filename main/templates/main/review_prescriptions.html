@@ -1,0 +1,51 @@
+{% extends "main/base.html" %}
+{% block title %}Review Prescriptions{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:900px; margin:2rem auto;">
+
+{% if is_doctor %}
+    <h2 style="margin-bottom:1.5rem;">Pending Prescriptions</h2>
+
+    {% for p in prescriptions %}
+        <div class="card" style="border:1px solid #ddd; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+            <img src="{{ p.image.url }}" alt="Prescription" style="width:200px; height:auto; margin-bottom:0.5rem;">
+            <p><strong>Patient:</strong> {{ p.patient.username }}</p>
+            <p><strong>Uploaded On:</strong> {{ p.uploaded_at }}</p>
+            <p><strong>Status:</strong> {{ p.status|title }}</p>
+
+            {# ✅ Only show doctor + notes if reviewed #}
+            {% if p.status != "pending" and p.doctor %}
+                <p><strong>Reviewed by:</strong> {{ p.doctor.user.username }}</p>
+            {% endif %}
+            {% if p.status != "pending" and p.doctor_notes %}
+                <p><strong>Notes:</strong> {{ p.doctor_notes }}</p>
+            {% endif %}
+
+            {# ✅ Review form only if still pending #}
+            {% if p.status == "pending" %}
+                <form method="post" action="{% url 'update_prescription_status' p.id %}">
+                    {% csrf_token %}
+                    <label for="status_{{ p.id }}">Update Status:</label>
+                    <select id="status_{{ p.id }}" name="status" required style="margin-bottom:0.5rem; padding:0.3rem; border-radius:4px; border:1px solid #ccc;">
+                        <option value="approved">Approve</option>
+                        <option value="rejected">Reject</option>
+                    </select>
+                    <br>
+                    <label for="notes_{{ p.id }}">Doctor Notes:</label>
+                    <textarea id="notes_{{ p.id }}" name="doctor_notes" placeholder="Add any notes..." rows="3" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #ccc; margin-bottom:0.5rem;"></textarea>
+                    <button type="submit" class="btn primary-btn">Submit</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No pending prescriptions.</p>
+    {% endfor %}
+
+{% else %}
+    <h2>Access Denied</h2>
+    <p>You do not have permission to review prescriptions.</p>
+{% endif %}
+
+</section>
+{% endblock %}

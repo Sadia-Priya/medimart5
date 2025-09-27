@@ -1,0 +1,104 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Pet Care{% endblock %}
+
+{% block content %}
+<style>
+/* ---------- Product Grid ---------- */
+.product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 10px;
+}
+.product-card {
+    flex: 1 1 calc(25% - 18px);
+    max-width: 280px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1.8px solid #f2f5f8;
+    box-shadow: 0 2px 11px rgba(65,109,152,0.07);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: 0.3s ease;
+}
+.product-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 9px 26px rgba(22,115,185,0.13) !important;
+}
+.product-card-img-wrapper {
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.product-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #fbfbfb;
+}
+.product-card h6 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1976d2;
+    margin: 5px 0 8px 0;
+}
+.product-price {
+    color: #28a745;
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+}
+.product-card a.btn {
+    margin-top: auto;
+    width: 100%;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1200px) {
+    .product-card { flex: 1 1 calc(33.33% - 18px); }
+}
+@media (max-width: 900px) {
+    .product-card { flex: 1 1 calc(50% - 18px); }
+}
+@media (max-width: 600px) {
+    .product-card { flex: 1 1 100%; }
+}
+</style>
+
+<section class="container" style="padding: 3rem 1rem;">
+    <div style="text-align:center; margin-bottom:2rem;">
+        <h1>{{ category.name }}</h1>
+        <p>All products for {{ category.name }}.</p>
+    </div>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-card-img-wrapper">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{% static 'main/images/product.png' %}" alt="No image">
+                {% endif %}
+            </div>
+            <h6>{{ product.name }}</h6>
+            {% if product.price %}
+                <p class="product-price">৳{{ product.price }}</p>
+            {% endif %}
+            <a href="{% url 'add_pet_to_cart' product.id %}" class="btn btn-primary btn-sm">Add to Cart</a>
+        </div>
+        {% empty %}
+        <p class="text-center">No products found for this category.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

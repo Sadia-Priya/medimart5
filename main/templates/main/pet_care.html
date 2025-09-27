@@ -1,0 +1,178 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Pet Care – MediMart{% endblock %}
+
+{% block content %}
+<style>
+/* ---------- Hero ---------- */
+.petcare-hero {
+    background: #1696c5 url("{% static 'main/images/pet_care_hero.png' %}") center/cover no-repeat;
+    padding: 70px 0 90px 0;
+    color: #fff;
+    text-align: center;
+    border-bottom-left-radius: 38px;
+    border-bottom-right-radius: 38px;
+}
+.petcare-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+.petcare-hero h5 {
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+/* ---------- Category Section ---------- */
+.pharmacy-section {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 5px 32px rgba(51,106,163,0.12);
+    margin: 40px auto 50px auto;
+    max-width: 1450px;
+    padding: 45px 40px 38px 40px;
+    border: 1px solid #f1f3f6;
+}
+.pharmacy-section h2 {
+    color: #1873ad;
+    font-weight: 700;
+    font-size: 1.55rem;
+    text-align: center;
+    margin-bottom: 14px;
+}
+.pharmacy-section p {
+    color: #405069;
+    max-width: 830px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.45;
+}
+
+/* ---------- Grids ---------- */
+.categories-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    justify-content: center;
+}
+
+.pet-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1.8px solid #f2f5f8;
+    box-shadow: 0 2px 11px rgba(65,109,152,0.07);
+    width: 100%;
+    max-width: 320px;
+    padding: 28px 18px 24px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.pet-card-img-wrap {
+    width: 100%;
+    padding-bottom: 18px;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.pet-card img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #fbfbfb;
+}
+.pet-card h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1976d2;
+    margin: 5px 0 13px 0;
+}
+.pet-card p {
+    font-size: 1.08rem;
+    color: #556383;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    min-height: 48px;
+}
+.pet-card a.btn {
+    margin-top: auto;
+    width: 100%;
+}
+
+/* ---------- Book a Vet Section ---------- */
+.book-vet-section {
+    background: #e9f7f2;
+    padding: 50px 20px;
+    border-radius: 20px;
+    text-align: center;
+    margin: 50px auto;
+    max-width: 1100px;
+}
+.book-vet-section h3 {
+    color: #198754;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+.book-vet-section p {
+    font-size: 1.1rem;
+    color: #405069;
+    margin-bottom: 25px;
+}
+.book-vet-section a.btn {
+    background: #198754;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+/* ---------- Body ---------- */
+body { background: #f6f9fc; }
+</style>
+
+<!-- Hero Section -->
+<div class="petcare-hero">
+    <h1>Comprehensive Pet Care</h1>
+    <h5>Everything your furry friends need—from medications to nutrition and vet consultations.</h5>
+</div>
+
+<!-- Categories Section -->
+<div class="pharmacy-section">
+    <h2>Welcome to our Pet Pharmacy</h2>
+    <p>At MediMart, we know that pets are family. Browse categories below to find the products your pets need.</p>
+
+    <div class="categories-grid">
+        {% for category in categories %}
+        <div class="pet-card">
+            <div class="pet-card-img-wrap">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                {% else %}
+                    <img src="{% static 'main/images/category.png' %}" alt="{{ category.name }}">
+                {% endif %}
+            </div>
+            <h5>{{ category.name }}</h5>
+            <p>{{ category.short_desc|default:"No description available." }}</p>
+            <a href="{% url 'pet_category_detail' category.id %}" class="btn btn-primary btn-sm" style="margin-top:12px;">View All</a>
+        </div>
+        {% empty %}
+        <p class="text-center">No pet categories available yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Book a Vet Section -->
+<div class="book-vet-section">
+    <h3>Need expert help for your pet?</h3>
+    <p>Book an online appointment with our licensed veterinarians and get professional advice for your furry friends.</p>
+    <a href="{% url 'pet_doctors' %}" class="btn">Book Online Vet Consultation</a>
+</div>
+
+{% endblock %}

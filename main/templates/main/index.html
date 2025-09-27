@@ -1,0 +1,287 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Home – MediMart{% endblock %}
+
+{% block content %}
+
+<style>
+/* ================= Hero Section ================= */
+/* Reset default margins */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    height: 450px;
+    width: 100vw; /* full viewport width */
+    margin: 0; /* no gap */
+    background: url('{% static "main/images/hero.jpg" %}') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 5%; /* text spacing from left */
+    box-sizing: border-box;
+}
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+}
+.hero-content {
+    position: relative; /* above overlay */
+    max-width: 45%; /* restrict width for left-aligned text */
+    color: white;
+    padding-left: 5%;
+    animation: slideInLeft 1.2s ease-out forwards;
+    opacity: 0; /* start hidden for animation */
+}
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+.hero-content a {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, #ffdd57, #ffc107);
+    color: #0066a0;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.hero-content a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* ================= Slide-in Animation ================= */
+@keyframes slideInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ================= Categories Section ================= */
+.categories {
+    padding: 3rem 1rem;
+    text-align: center;
+}
+.categories h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #0066a0;
+}
+.category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+}
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px;
+    text-decoration: none;
+    color: #333;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.category-card:hover {
+    color: #0066a0 !important;
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+.category-card img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.7rem;
+    transition: transform 0.3s;
+}
+.category-card:hover img {
+    transform: scale(1.1);
+}
+.category-card span {
+    font-weight: 600;
+    transition: color 0.3s;
+}
+.category-card:hover span {
+    color: #ff9f00;
+}
+
+/* ================= Features Section ================= */
+.features {
+    padding: 3rem 1rem;
+    text-align: center;
+    background: linear-gradient(120deg, #f9f9f9, #f0f8ff);
+}
+.features h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #0066a0;
+}
+.features-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+.feature-card {
+    flex: 1 1 220px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.feature-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+.feature-card i {
+    font-size: 2.5rem;
+    color: #4CAF50;
+    margin-bottom: 0.8rem;
+    transition: color 0.3s;
+}
+.feature-card:hover i {
+    color: #2e7d32;
+}
+.feature-card h3 {
+    margin: 0.8rem 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+.feature-card p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* ================= About Section ================= */
+.about {
+    padding: 3rem 1rem;
+    text-align: center;
+    animation: fadeInUp 1s ease forwards;
+    opacity: 0;
+}
+.about h2 {
+    font-size: 2rem;
+    color: #0066a0;
+    margin-bottom: 1.5rem;
+}
+.about p {
+    max-width: 850px;
+    margin: 0 auto;
+    line-height: 1.7;
+    color: #555;
+}
+
+/* ================= Fade-in Animation ================= */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= Responsive ================= */
+@media(max-width: 992px) {
+    .feature-card, .category-card {
+        width: 45%;
+    }
+    .hero-content {
+        max-width: 60%;
+    }
+}
+@media(max-width: 576px) {
+    .feature-card, .category-card {
+        width: 80%;
+    }
+    .hero-content {
+        max-width: 90%;
+        padding-left: 5%;
+    }
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    .hero-content p {
+        font-size: 1rem;
+    }
+}
+</style>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>Welcome to MediMart</h1>
+        <p>Comprehensive health, convenient access. Order medicines and care services with confidence.</p>
+        <a href="#categories">Shop Categories</a>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section id="categories" class="categories container">
+    <h2>Shop by Category</h2>
+    <div class="category-grid">
+        {% for cat in categories %}
+            <a href="{% url 'product_list' cat.id %}" class="category-card">
+                {% if cat.image %}
+                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+                {% else %}
+                    <i class="fa fa-box fa-2x"></i>
+                {% endif %}
+                <span>{{ cat.name }}</span>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="services" class="features container">
+    <h2>Why Choose MediMart?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fa fa-shipping-fast"></i>
+            <h3>Fast Delivery</h3>
+            <p>Get your medicines delivered quickly and safely right to your door.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa fa-check-circle"></i>
+            <h3>Trusted Products</h3>
+            <p>We source only from licensed suppliers to ensure authenticity and quality.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa fa-user-md"></i>
+            <h3>Professional Care</h3>
+            <p>Access doctors, pharmacy services, and lab tests through a single platform.</p>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about container">
+    <h2>About Us</h2>
+    <p>MediMart is a modern online pharmacy that combines a vast catalogue of pharmaceutical products with health services like doctor consultations and home-based lab tests. Our mission is to make healthcare accessible, affordable, and reliable for everyone.</p>
+</section>
+
+{% endblock %}

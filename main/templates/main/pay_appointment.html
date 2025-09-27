@@ -1,0 +1,31 @@
+<section style="max-width:500px; margin:2rem auto; padding:2rem; border:1px solid #ddd; border-radius:8px;">
+    <h2>Pay for Appointment with {{ appointment.doctor.name }}</h2>
+    <p><strong>Specialty:</strong> {{ appointment.doctor.specialty }}</p>
+    <p><strong>Date:</strong> {{ appointment.date }} | <strong>Time:</strong> {{ appointment.time }}</p>
+    <p><strong>Amount to Pay:</strong> ৳{{ appointment.doctor.fee }}</p>
+
+    {% if appointment.is_paid %}
+        <p style="color:green; font-weight:bold;">Payment Completed ✅</p>
+        <p><strong>Payment Method:</strong> {{ appointment.payment_method }}</p>
+        <p><strong>Transaction ID:</strong> {{ appointment.transaction_id }}</p>
+    {% else %}
+        <p><strong>Bkash Number:</strong> {{ appointment.doctor.bkash_number }}</p>
+        <p>Send the amount via Bkash and enter the Transaction ID below:</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="payment_method">Payment Method:</label><br>
+            <select name="payment_method" id="payment_method" required style="width:100%; padding:8px; margin:8px 0;">
+                <option value="Bkash">Bkash</option>
+                <option value="Nagad">Nagad</option>
+            </select><br>
+
+            <label for="transaction_id">Transaction ID:</label><br>
+            <input type="text" name="transaction_id" id="transaction_id" required style="width:100%; padding:8px; margin:8px 0;"><br>
+
+            <button type="submit" style="padding:10px 15px; background:#4CAF50; color:white; border:none; border-radius:5px;">
+                Pay ৳{{ appointment.doctor.fee }}
+            </button>
+        </form>
+    {% endif %}
+</section>

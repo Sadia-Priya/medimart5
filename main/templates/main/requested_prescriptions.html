@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% block title %}Requested Prescriptions{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:900px; margin:2rem auto;">
+
+<h2>Requested Prescriptions</h2>
+
+{% for p in prescriptions %}
+<div class="card" style="border:1px solid #ddd; padding:1rem; border-radius:8px; margin-bottom:1rem;">
+    <img src="{{ p.image.url }}" alt="Prescription" style="width:200px; height:auto; margin-bottom:0.5rem;">
+    <p><strong>Patient:</strong> {{ p.patient.username }}</p>
+    <p><strong>Uploaded On:</strong> {{ p.uploaded_at }}</p>
+    <p><strong>Status:</strong> {{ p.status|capfirst }}</p>
+
+    {% if p.status != "pending" and p.doctor %}
+        <p><strong>Reviewed by:</strong> {{ p.doctor.user.username }}</p>
+        {% if p.doctor_notes %}
+            <p><strong>Notes:</strong> {{ p.doctor_notes }}</p>
+        {% endif %}
+    {% endif %}
+
+    {% if p.status == "pending" %}
+    <form method="post" action="{% url 'update_prescription_status' p.id %}">
+        {% csrf_token %}
+        <label>Status:</label>
+        <select name="status" required>
+            <option value="approved">Approve</option>
+            <option value="rejected">Reject</option>
+        </select>
+        <label>Doctor Notes:</label>
+        <textarea name="doctor_notes" placeholder="Add notes here..." rows="2" style="width:100%;"></textarea>
+        <button type="submit" class="btn primary-btn">Submit</button>
+    </form>
+    {% endif %}
+
+</div>
+{% empty %}
+<p>No prescriptions found.</p>
+{% endfor %}
+
+</section>
+{% endblock %}

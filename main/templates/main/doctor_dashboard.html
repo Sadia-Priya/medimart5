@@ -1,0 +1,61 @@
+{% extends "main/base.html" %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<section style="max-width:900px; margin:2rem auto; padding:1.5rem; background:#fff; border-radius:8px; border:1px solid #ddd;">
+    <h2 style="margin-bottom:1rem;">Welcome, {{ doctor.name }}</h2>
+<!--
+    <p>
+        <a href="{% url 'logout' %}" style="color:#fff; background:#007bff; padding:0.4rem 0.8rem; border-radius:4px; text-decoration:none;">Logout</a>
+    </p>
+    -->
+
+    <!-- Summary -->
+    <div style="margin-top:2rem; margin-bottom:2rem; padding:1rem; background:#f9f9f9; border:1px solid #ddd; border-radius:6px;">
+        <h3 style="margin-bottom:1rem;">Summary</h3>
+        <p><strong>Total Appointments:</strong> {{ appointments|length }}</p>
+        <p><strong>Paid Appointments:</strong> {{ paid_appointments_count }}</p>
+        <p><strong>Total Earnings:</strong> ৳{{ total_earnings }}</p>
+    </div>
+
+    <!-- Appointments Table -->
+    <h3 style="margin-top:1.5rem; margin-bottom:1rem;">Your Appointments</h3>
+    {% if appointments %}
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem;">
+            <thead>
+                <tr style="background:#f2f2f2;">
+                    <th style="padding:0.5rem; border:1px solid #ddd;">Patient</th>
+                    <th style="padding:0.5rem; border:1px solid #ddd;">Date</th>
+                    <th style="padding:0.5rem; border:1px solid #ddd;">Time</th>
+                    <th style="padding:0.5rem; border:1px solid #ddd;">Status</th>
+                    <th style="padding:0.5rem; border:1px solid #ddd;">Notes</th>
+                    <th style="padding:0.5rem; border:1px solid #ddd;">Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.patient.username }}</td>
+                    <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.date|date:"Y-m-d" }}</td>
+                    <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.time|time:"H:i" }}</td>
+                    <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.status|capfirst }}</td>
+                    <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.notes|default:"-" }}</td>
+                    <td style="padding:0.5rem; border:1px solid #ddd;">
+                        {% if appointment.is_paid %}
+                            <span style="color:green; font-weight:bold;">Paid</span><br>
+                            Method: {{ appointment.payment_method }}<br>
+                            Transaction ID: {{ appointment.transaction_id }}
+                        {% else %}
+                            <span style="color:red; font-weight:bold;">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align:center; padding:1rem; color:#555;">No appointments yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

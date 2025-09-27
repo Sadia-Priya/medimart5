@@ -1,0 +1,56 @@
+{% extends "main/base.html" %}
+
+{% block title %}Doctor Appointments{% endblock %}
+
+{% block content %}
+<section style="max-width:900px; margin:2rem auto; padding:1.5rem; background:#fff; border-radius:8px; border:1px solid #ddd;">
+    <h1 style="margin-bottom:1.5rem;">My Appointments</h1>
+
+    {% if appointments %}
+    <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <thead>
+            <tr style="background:#f2f2f2;">
+                <th style="padding:0.5rem; border:1px solid #ddd;">Date</th>
+                <th style="padding:0.5rem; border:1px solid #ddd;">Time</th>
+                <th style="padding:0.5rem; border:1px solid #ddd;">Patient</th>
+                <th style="padding:0.5rem; border:1px solid #ddd;">Visit Type</th>
+                <th style="padding:0.5rem; border:1px solid #ddd;">Prescription</th>
+                <th style="padding:0.5rem; border:1px solid #ddd;">Online Meet</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.date|date:"Y-m-d" }}</td>
+                <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.time|time:"H:i" }}</td>
+                <td style="padding:0.5rem; border:1px solid #ddd;">{{ appointment.patient.username }}</td>
+                <td style="padding:0.5rem; border:1px solid #ddd;">
+                    {% if appointment.visit_type == "online" %}
+                        Online
+                    {% else %}
+                        Offline
+                    {% endif %}
+                </td>
+                <td style="padding:0.5rem; border:1px solid #ddd; text-align:center;">
+                    {% if appointment.prescription_file %}
+                        Done
+                    {% else %}
+                        <a href="{% url 'upload_appointment_prescription' appointment.id %}">Upload</a>
+                    {% endif %}
+                </td>
+                <td style="padding:0.5rem; border:1px solid #ddd;">
+                    {% if appointment.visit_type == "online" and appointment.meeting_link %}
+                        <a href="{{ appointment.meeting_link }}" target="_blank">Join Meeting</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>You have no appointments yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

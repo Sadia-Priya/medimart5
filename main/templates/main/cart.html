@@ -1,0 +1,85 @@
+{% extends "main/base.html" %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 2rem; max-width: 800px; margin: auto;">
+  <h2 style="text-align:center; margin-bottom: 1.5rem;">Your Cart</h2>
+
+  {% if cart_items %}
+    <table style="width:100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+      <thead>
+        <tr>
+          <th style="border-bottom:1px solid #ddd; padding:0.5rem;">Product</th>
+          <th style="border-bottom:1px solid #ddd; padding:0.5rem;">Quantity</th>
+          <th style="border-bottom:1px solid #ddd; padding:0.5rem;">Price</th>
+          <th style="border-bottom:1px solid #ddd; padding:0.5rem;">Subtotal</th>
+          <th style="border-bottom:1px solid #ddd; padding:0.5rem;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart_items %}
+        <tr>
+          <td style="padding:0.5rem;">
+            {% if item.product %}
+              {{ item.product.name }}
+            {% elif item.pet_product %}
+              {{ item.pet_product.name }}
+            {% endif %}
+          </td>
+          <td style="padding:0.5rem;">
+            <form method="post" action="{% if item.product %}{% url 'update_cart' item.product.id %}{% elif item.pet_product %}{% url 'update_pet_cart' item.pet_product.id %}{% endif %}">
+              {% csrf_token %}
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="1" style="width:60px;">
+              <button type="submit" class="btn btn-sm btn-primary">Update</button>
+            </form>
+          </td>
+          <td style="padding:0.5rem;">
+            {% if item.product %}
+              ৳{{ item.product.price|floatformat:2 }}
+            {% elif item.pet_product %}
+              ৳{{ item.pet_product.price|floatformat:2 }}
+            {% endif %}
+          </td>
+          <td style="padding:0.5rem;">
+            ৳{{ item.subtotal|floatformat:2 }}
+          </td>
+          <td style="padding:0.5rem;">
+            <form method="post" action="{% if item.product %}{% url 'remove_from_cart' item.product.id %}{% elif item.pet_product %}{% url 'remove_pet_from_cart' item.pet_product.id %}{% endif %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3 style="text-align:right; margin-bottom:1.5rem;">Total: ৳{{ total|floatformat:2 }}</h3>
+
+    {% if prescription_required and not has_approved_prescription %}
+      <p style="color:red; text-align:center;">
+        You must upload an approved prescription to checkout.
+      </p>
+      <div style="text-align:center; margin-bottom:1rem;">
+        <a href="{% url 'upload_prescription' %}" class="btn btn-warning">Upload Prescription</a>
+      </div>
+      <div style="text-align:center;">
+        <a class="btn btn-success disabled" aria-disabled="true" style="pointer-events:none; opacity:.6;">
+          Proceed to Checkout
+        </a>
+      </div>
+    {% else %}
+      <div style="text-align:center; margin-bottom:1rem;">
+        <a href="{% url 'checkout' %}" class="btn btn-success">Proceed to Checkout</a>
+      </div>
+    {% endif %}
+
+  {% else %}
+    <p style="text-align:center; color:red;">Your cart is empty.</p>
+    <p style="text-align:center;">
+      <a href="{% url 'index' %}" class="btn btn-primary">Continue Shopping</a>
+    </p>
+  {% endif %}
+</section>
+{% endblock %}

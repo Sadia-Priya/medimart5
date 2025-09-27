@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% block title %}Manage eLab Reports{% endblock %}
+
+{% block content %}
+<section class="container" style="max-width:900px; margin:2rem auto; font-family: Arial, sans-serif;">
+    <h2>Manage eLab Reports</h2>
+
+    <table style="width:100%; border-collapse: collapse; font-size:0.85rem; margin-top:1rem;">
+        <thead>
+            <tr>
+                <th style="border:1px solid #ddd; padding:6px;">Patient</th>
+                <th style="border:1px solid #ddd; padding:6px;">Test Name</th>
+                <th style="border:1px solid #ddd; padding:6px;">Scheduled Date</th>
+                <th style="border:1px solid #ddd; padding:6px;">Report</th>
+                <th style="border:1px solid #ddd; padding:6px;">Verified</th>
+                <th style="border:1px solid #ddd; padding:6px;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test in elab_tests %}
+            <tr>
+                <td style="border:1px solid #ddd; padding:6px;">{{ test.user.username }}</td>
+                <td style="border:1px solid #ddd; padding:6px;">{{ test.test_name }}</td>
+                <td style="border:1px solid #ddd; padding:6px;">{{ test.preferred_date|date:"Y-m-d" }}</td>
+                <td style="border:1px solid #ddd; padding:6px;">
+                    {% if test.report_file %}
+                        <a href="{{ test.report_file.url }}" target="_blank">View</a>
+                    {% else %}
+                        Not uploaded
+                    {% endif %}
+                </td>
+                <td style="border:1px solid #ddd; padding:6px;">
+                    {{ test.report_verified|yesno:"Yes,No" }}
+                </td>
+                <td style="border:1px solid #ddd; padding:6px;">
+                    <form method="post" enctype="multipart/form-data" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="test_id" value="{{ test.id }}">
+                        <input type="file" name="report_file" required>
+                        <label>
+                            <input type="checkbox" name="report_verified" {% if test.report_verified %}checked{% endif %}>
+                            Verify
+                        </label>
+                        <button type="submit">Upload</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

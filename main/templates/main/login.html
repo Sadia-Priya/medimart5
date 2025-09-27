@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Login – Medimart{% endblock %}
+
+{% block content %}
+<section class="auth-section" style="max-width:400px; margin:2rem auto; padding:1.5rem; border:1px solid #ddd; border-radius:8px; background:#fff;">
+    <h2 style="text-align:center; margin-bottom:1rem;">Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+        <div style="margin-bottom:1rem;">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+        
+        <div style="margin-bottom:1rem;">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+        
+        <button type="submit" class="btn primary-btn" style="width:100%; padding:0.5rem;">Login</button>
+    </form>
+    
+    <p style="text-align:center; margin-top:1rem;">
+        Don't have an account? <a href="{% url 'signup' %}">Create one</a>.
+    </p>
+</section>
+{% endblock %}
