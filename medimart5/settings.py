@@ -23,7 +23,7 @@ SECRET_KEY = 'django-insecure-g7j&rwbi3y!pm-afhghg=_864=+j2+2uov1mi+8#4aoi2kotdd
 DEBUG = True
 
 # Allow all hosts in development
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['sadiaislamkhan.pythonanywhere.com']
 
 
 # Application definition
